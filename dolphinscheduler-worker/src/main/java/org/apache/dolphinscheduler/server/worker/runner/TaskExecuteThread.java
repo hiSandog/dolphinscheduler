@@ -174,7 +174,8 @@ public class TaskExecuteThread implements Runnable, Delayed {
 
             //init varPool
             this.task.getParameters().setVarPool(taskExecutionContext.getVarPool());
-
+            System.out.println("TaskExecuteThread --- run");
+            // 真正执行任务
             // task handle
             this.task.handle();
 

@@ -157,6 +157,7 @@ public class NettyExecutorManager extends AbstractExecutorManager<Boolean> {
         boolean success = false;
         do {
             try {
+                // 发送任务到worker节点
                 nettyRemotingClient.send(host, command);
                 success = true;
             } catch (Exception ex) {

@@ -94,6 +94,7 @@ public class TaskExecuteProcessor implements NettyRequestProcessor {
     @Timed(value = "dolphinscheduler_task_execution_timer", percentiles = {0.5, 0.75, 0.95, 0.99}, histogram = true)
     @Override
     public void process(Channel channel, Command command) {
+        System.out.println("TaskExecuteProcessor ---- process");
         Preconditions.checkArgument(CommandType.TASK_EXECUTE_REQUEST == command.getType(),
                 String.format("invalid command type : %s", command.getType()));
 
@@ -177,6 +178,7 @@ public class TaskExecuteProcessor implements NettyRequestProcessor {
             taskCallbackService.sendTaskExecuteDelayCommand(taskExecutionContext);
         }
 
+        // 提交任务到 worker 队列
         // submit task to manager
         boolean offer = workerManager.offer(new TaskExecuteThread(taskExecutionContext, taskCallbackService, alertClientService, taskPluginManager));
         if (!offer) {

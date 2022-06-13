@@ -91,6 +91,7 @@ public class ShellTask extends AbstractTaskExecutor {
 
     @Override
     public void handle() throws Exception {
+        System.out.println("ShellTask --- run");
         try {
             // construct process
             String command = buildCommand();
