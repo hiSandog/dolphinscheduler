@@ -182,6 +182,7 @@ public class MasterRegistryClient {
     }
 
     /**
+     * 在zk临时注册该Master信息
      * Registry the current master server itself to registry.
      */
     void registry() {
