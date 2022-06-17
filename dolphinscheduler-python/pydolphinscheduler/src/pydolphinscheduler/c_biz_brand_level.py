@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pydolphinscheduler.core import ProcessDefinition
-from pydolphinscheduler.tasks import Sql
+from pydolphinscheduler.tasks import Python
 
 task_name = "商户等级表"
 
@@ -9,21 +9,19 @@ def job_name(jobName):
     return jobName + "(" + task_name + ")"
 
 
-a = "123"
-b = "123"
-if a == b:
-    print("sss")
-
-# with ProcessDefinition(
-#         user="admin",
-#         project="dev",
-#         name="1xxxx",
-#         schedule="0 20 3 * * ? *",
-#         start_time="2021-01-01",
-#         tenant="dev"
-# ) as pd:
-    # first_day_run = Sql(
-    #     name=job_name("每月一号执行"),
-    #     datasource_name="dev",
-    #     sql="update ta set app = '' where id = 1;")
-    # pd.submit()
+if __name__ == "__main__":
+    with ProcessDefinition(
+            user="admin",
+            project="dev",
+            name="1xxxx",
+            schedule="0 20 3 * * ? *",
+            start_time="2021-01-01",
+            tenant="dev"
+    ) as pd:
+        base_info = Python(
+            definition="str",
+            name=job_name("原始基数日常执行"),
+            resource_list=[{"resourceName": "/aaa.sh"}],
+            # code="""print"""
+        )
+        pd.submit()

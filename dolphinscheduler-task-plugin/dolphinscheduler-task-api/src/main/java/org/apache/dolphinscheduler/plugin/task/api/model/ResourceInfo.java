@@ -17,6 +17,8 @@
 
 package org.apache.dolphinscheduler.plugin.task.api.model;
 
+import org.apache.dolphinscheduler.spi.enums.ResourceType;
+
 /**
  * resource info
  */
@@ -30,6 +32,11 @@ public class ResourceInfo {
      * full name of the resource that was uploaded
      */
     private String resourceName;
+
+    /**
+     * resource type
+     */
+    private ResourceType type = ResourceType.FILE;
 
     private String res;
 
@@ -55,5 +62,13 @@ public class ResourceInfo {
 
     public void setResourceName(String resourceName) {
         this.resourceName = resourceName;
+    }
+
+    public ResourceType getType() {
+        return type;
+    }
+
+    public void setType(ResourceType type) {
+        this.type = type;
     }
 }
