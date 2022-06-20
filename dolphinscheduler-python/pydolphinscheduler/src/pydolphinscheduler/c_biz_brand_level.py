@@ -21,7 +21,7 @@ if __name__ == "__main__":
         base_info = Python(
             definition="str",
             name=job_name("原始基数日常执行"),
-            resource_list=[{"resourceName": "/aaa.sh"}],
+            resource_list=[{"resourceName": "/aaaa.py.py"}, {"resourceName": "/dev/abcd.py"}, {"resourceName": "/dev/tttttttttt.py"}],
             # code="""print"""
         )
         pd.submit()

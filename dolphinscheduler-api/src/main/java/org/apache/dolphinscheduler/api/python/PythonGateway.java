@@ -41,15 +41,7 @@ import org.apache.dolphinscheduler.common.enums.TaskDependType;
 import org.apache.dolphinscheduler.common.enums.UserType;
 import org.apache.dolphinscheduler.common.enums.WarningType;
 import org.apache.dolphinscheduler.common.utils.CodeGenerateUtils;
-import org.apache.dolphinscheduler.dao.entity.DataSource;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
-import org.apache.dolphinscheduler.dao.entity.Project;
-import org.apache.dolphinscheduler.dao.entity.ProjectUser;
-import org.apache.dolphinscheduler.dao.entity.Queue;
-import org.apache.dolphinscheduler.dao.entity.Schedule;
-import org.apache.dolphinscheduler.dao.entity.TaskDefinition;
-import org.apache.dolphinscheduler.dao.entity.Tenant;
-import org.apache.dolphinscheduler.dao.entity.User;
+import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.dao.mapper.DataSourceMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
@@ -72,6 +64,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.dolphinscheduler.spi.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -547,6 +540,28 @@ public class PythonGateway {
 
         result.put("id", namedResources.get(0).getId());
         result.put("name", namedResources.get(0).getName());
+        return result;
+    }
+
+    /**
+     * Get resource by given program type and full name. It return map contain resource id, name.
+     * Useful in Python API create flink or spark task which need processDefinition information.
+     *
+     * @param resourceType program type one of SCALA, JAVA and PYTHON
+     * @param fullName full name of the resource
+     */
+    public Map<String, Object> getResourcesFileInfo(String userName, String resourceType, String fullName) {
+        Map<String, Object> result = new HashMap<>();
+        User user = usersService.queryUser(userName);
+        Result<Object> resourceResponse = resourceService.queryResource(user, fullName, null, ResourceType.valueOf(resourceType));
+        if (resourceResponse.getCode() != Status.SUCCESS.getCode()) {
+            String msg = String.format("Can not find valid resource by resource type %s and name %s", resourceType, fullName);
+            logger.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+        Resource resource = (Resource) resourceResponse.getData();
+        result.put("id", resource.getId());
+        result.put("name", resource.getFullName());
         return result;
     }
 

@@ -664,24 +664,24 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
      * @param result    Result
      */
     private void createDirectory(User loginUser, String fullName, ResourceType type, Result<Object> result) {
-        String tenantCode = tenantMapper.queryById(loginUser.getTenantId()).getTenantCode();
-        String directoryName = storageOperate.getFileName(type, tenantCode, fullName);
-        String resourceRootPath = storageOperate.getDir(type, tenantCode);
-        try {
-            if (!storageOperate.exists(tenantCode, resourceRootPath)) {
-                storageOperate.createTenantDirIfNotExists(tenantCode);
-            }
-
-            if (!storageOperate.mkdir(tenantCode, directoryName)) {
-                logger.error("create resource directory {}  failed", directoryName);
-                putMsg(result, Status.STORE_OPERATE_CREATE_ERROR);
-                throw new ServiceException(String.format("create resource directory: %s failed.", directoryName));
-            }
-        } catch (Exception e) {
-            logger.error("create resource directory {}  failed", directoryName);
-            putMsg(result, Status.STORE_OPERATE_CREATE_ERROR);
-            throw new ServiceException(String.format("create resource directory: %s failed.", directoryName));
-        }
+//        String tenantCode = tenantMapper.queryById(loginUser.getTenantId()).getTenantCode();
+//        String directoryName = storageOperate.getFileName(type, tenantCode, fullName);
+//        String resourceRootPath = storageOperate.getDir(type, tenantCode);
+//        try {
+//            if (!storageOperate.exists(tenantCode, resourceRootPath)) {
+//                storageOperate.createTenantDirIfNotExists(tenantCode);
+//            }
+//
+//            if (!storageOperate.mkdir(tenantCode, directoryName)) {
+//                logger.error("create resource directory {}  failed", directoryName);
+//                putMsg(result, Status.STORE_OPERATE_CREATE_ERROR);
+//                throw new ServiceException(String.format("create resource directory: %s failed.", directoryName));
+//            }
+//        } catch (Exception e) {
+//            logger.error("create resource directory {}  failed", directoryName);
+//            putMsg(result, Status.STORE_OPERATE_CREATE_ERROR);
+//            throw new ServiceException(String.format("create resource directory: %s failed.", directoryName));
+//        }
     }
 
     /**

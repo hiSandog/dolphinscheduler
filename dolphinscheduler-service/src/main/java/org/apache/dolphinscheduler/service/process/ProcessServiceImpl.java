@@ -2448,15 +2448,6 @@ public class ProcessServiceImpl implements ProcessService {
         Set<Integer> resourceIds = null;
         AbstractParameters params = taskPluginManager.getParameters(ParametersNode.builder().taskType(taskDefinition.getTaskType()).taskParams(taskDefinition.getTaskParams()).build());
         if (params != null && CollectionUtils.isNotEmpty(params.getResourceFilesList())) {
-            params.getResourceFilesList().forEach(resourceFile -> {
-                if (resourceFile.getId() <= 0 && StringUtils.isNotEmpty(resourceFile.getResourceName())) {
-                    List<Resource> resources = resourceMapper.queryResource(resourceFile.getResourceName(), resourceFile.getType().getCode());
-                    if (CollectionUtils.isNotEmpty(resources)) {
-                        resourceFile.setId(resources.get(0).getId());
-                    }
-                }
-            });
-            taskDefinition.setTaskParams(JSONUtils.toJsonString(params));
             resourceIds = params.getResourceFilesList()
                     .stream()
                     .map(ResourceInfo::getId)
