@@ -54,15 +54,7 @@ import org.apache.dolphinscheduler.common.enums.TaskDependType;
 import org.apache.dolphinscheduler.common.enums.UserType;
 import org.apache.dolphinscheduler.common.enums.WarningType;
 import org.apache.dolphinscheduler.common.utils.CodeGenerateUtils;
-import org.apache.dolphinscheduler.dao.entity.DataSource;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
-import org.apache.dolphinscheduler.dao.entity.Project;
-import org.apache.dolphinscheduler.dao.entity.ProjectUser;
-import org.apache.dolphinscheduler.dao.entity.Queue;
-import org.apache.dolphinscheduler.dao.entity.Schedule;
-import org.apache.dolphinscheduler.dao.entity.TaskDefinition;
-import org.apache.dolphinscheduler.dao.entity.Tenant;
-import org.apache.dolphinscheduler.dao.entity.User;
+import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.dao.mapper.DataSourceMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
@@ -70,6 +62,7 @@ import org.apache.dolphinscheduler.dao.mapper.ProjectUserMapper;
 import org.apache.dolphinscheduler.dao.mapper.ScheduleMapper;
 import org.apache.dolphinscheduler.dao.mapper.TaskDefinitionMapper;
 import org.apache.dolphinscheduler.spi.enums.ResourceType;
+import org.apache.dolphinscheduler.spi.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -258,6 +251,73 @@ public class PythonGateway {
         }
         processDefinitionService.releaseProcessDefinition(user, projectCode, processDefinitionCode, ReleaseState.getEnum(releaseState));
         return processDefinitionCode;
+    }
+
+    public Integer createOrUpdateResource(
+            String userName, String resourceDir, String resourceName, String resourceType, String description, String resourceContent) {
+        User user = usersService.queryUser(userName);
+        String fullName = resourceDir + "/" + resourceName;
+        ResourceType type = ResourceType.valueOf(resourceType);
+        Result<Object> existResult = resourceService.queryResource(user, fullName, null, type);
+        if (existResult.getCode() == Status.SUCCESS.getCode()) {
+            // update
+        } else if (existResult.getCode() == Status.RESOURCE_NOT_EXIST.getCode()) {
+            // create
+        } else {
+            // throw exception
+        }
+        return null;
+    }
+
+    private int createResource(User user, String resourceDir, String resourceName, ResourceType resourceType, String description, String resourceContent) {
+        String[] dirNames = resourceDir.split("/");
+        int pid = -1;
+        StringBuilder currDirPath = new StringBuilder("/");
+        for (String dirName : dirNames) {
+            if (StringUtils.isNotEmpty(dirName)) {
+                currDirPath.append(dirName);
+                pid = queryOrCreateDirId(user, pid, currDirPath.toString(), dirName);
+                currDirPath.append("/");
+            }
+        }
+        String fileSuffix = resourceName.contains(".") ? resourceName.substring(resourceName.indexOf(".")) : "";
+        Result<Object> createResourceResult = resourceService.onlineCreateResource(
+                user, resourceType, resourceName, fileSuffix, description, resourceContent, pid, currDirPath.toString());
+        if (createResourceResult.getCode() == Status.SUCCESS.getCode()) {
+            Map<String, Object> resultMap = (Map<String, Object>) createResourceResult.getData();
+            return (int) resultMap.get("id");
+        }
+        String msg = String.format("Can not create resource %s", resourceName);
+        logger.error(msg);
+        throw new IllegalArgumentException(msg);
+    }
+
+    private int queryOrCreateDirId(User user, int pid, String dirFullName, String dirName) {
+        Result<Object> dirResult = resourceService.queryResource(user, dirFullName, null, ResourceType.FILE);
+        if (dirResult.getCode() == Status.SUCCESS.getCode()) {
+            Resource dirResource = (Resource) dirResult.getData();
+            return dirResource.getId();
+        } else if (dirResult.getCode() == Status.RESOURCE_NOT_EXIST.getCode()) {
+            // create dir
+            Result<Object> createDirResult = resourceService.createDirectory(user, dirName, "", ResourceType.FILE, pid, dirFullName);
+            if (createDirResult.getCode() == Status.SUCCESS.getCode()) {
+                Map<String, Object> resultMap = (Map<String, Object>) createDirResult.getData();
+                return (int) resultMap.get("id");
+            }
+        }
+        String msg = String.format("Can not create dir %s", dirFullName);
+        logger.error(msg);
+        throw new IllegalArgumentException(msg);
+    }
+
+    private int updateResoure(User user, int resourceId, String resourceFullName, String resourceContent) {
+        Result<Object> updateResult = resourceService.updateResourceContent(user, resourceId, resourceContent);
+        if (updateResult.getCode() != Status.SUCCESS.getCode()) {
+            String msg = String.format("Can not update resource %s", resourceFullName);
+            logger.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+        return resourceId;
     }
 
     /**
