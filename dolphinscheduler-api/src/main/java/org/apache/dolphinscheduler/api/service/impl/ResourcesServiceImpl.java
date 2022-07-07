@@ -193,7 +193,7 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
             throw new ServiceException("resource already exists, can't recreate");
         }
         //create directory in storage
-        createDirectory(loginUser, fullName, type, result);
+//        createDirectory(loginUser, fullName, type, result);
         return result;
     }
 
@@ -283,12 +283,12 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
             throw new ServiceException("resource already exists, can't recreate");
         }
 
-        // fail upload
-        if (!upload(loginUser, fullName, file, type)) {
-            logger.error("upload resource: {} file: {} failed.", RegexUtils.escapeNRT(name), RegexUtils.escapeNRT(file.getOriginalFilename()));
-            putMsg(result, Status.STORE_OPERATE_CREATE_ERROR);
-            throw new ServiceException(String.format("upload resource: %s file: %s failed.", name, file.getOriginalFilename()));
-        }
+//        // fail upload
+//        if (!upload(loginUser, fullName, file, type)) {
+//            logger.error("upload resource: {} file: {} failed.", RegexUtils.escapeNRT(name), RegexUtils.escapeNRT(file.getOriginalFilename()));
+//            putMsg(result, Status.STORE_OPERATE_CREATE_ERROR);
+//            throw new ServiceException(String.format("upload resource: %s file: %s failed.", name, file.getOriginalFilename()));
+//        }
         return result;
     }
 
@@ -369,10 +369,10 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
             return result;
         }
 
-        if (!PropertyUtils.getResUploadStartupState()){
-            putMsg(result, Status.STORAGE_NOT_STARTUP);
-            return result;
-        }
+//        if (!PropertyUtils.getResUploadStartupState()){
+//            putMsg(result, Status.STORAGE_NOT_STARTUP);
+//            return result;
+//        }
 
         if (resource.isDirectory() && storageOperate.returnStorageType().equals(ResUploadType.S3) && !resource.getFileName().equals(name)) {
             putMsg(result, Status.S3_CANNOT_RENAME);
@@ -522,11 +522,11 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
 
         if (file != null) {
             // fail upload
-            if (!upload(loginUser, fullName, file, type)) {
-                logger.error("upload resource: {} file: {} failed.", name, RegexUtils.escapeNRT(file.getOriginalFilename()));
-                putMsg(result, Status.HDFS_OPERATION_ERROR);
-                throw new ServiceException(String.format("upload resource: %s file: %s failed.", name, file.getOriginalFilename()));
-            }
+//            if (!upload(loginUser, fullName, file, type)) {
+//                logger.error("upload resource: {} file: {} failed.", name, RegexUtils.escapeNRT(file.getOriginalFilename()));
+//                putMsg(result, Status.HDFS_OPERATION_ERROR);
+//                throw new ServiceException(String.format("upload resource: %s file: %s failed.", name, file.getOriginalFilename()));
+//            }
             if (!fullName.equals(originFullName)) {
                 try {
                     storageOperate.delete(tenantCode, originFileName, false);
@@ -880,23 +880,23 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
             logger.error("resource type:{} name:{} has exist, can't create again.", type, RegexUtils.escapeNRT(fullName));
             putMsg(result, Status.RESOURCE_EXIST);
         } else {
-            // query tenant
-            Tenant tenant = tenantMapper.queryById(loginUser.getTenantId());
-            if (tenant != null) {
-                String tenantCode = tenant.getTenantCode();
-                try {
-                    String filename = storageOperate.getFileName(type, tenantCode, fullName);
-                    if (storageOperate.exists(tenantCode, filename)) {
-                        putMsg(result, Status.RESOURCE_FILE_EXIST, filename);
-                    }
-
-                } catch (Exception e) {
-                    logger.error("verify resource failed  and the reason is {}", e.getMessage());
-                    putMsg(result, Status.STORE_OPERATE_CREATE_ERROR);
-                }
-            } else {
-                putMsg(result, Status.CURRENT_LOGIN_USER_TENANT_NOT_EXIST);
-            }
+//            // query tenant
+//            Tenant tenant = tenantMapper.queryById(loginUser.getTenantId());
+//            if (tenant != null) {
+//                String tenantCode = tenant.getTenantCode();
+//                try {
+//                    String filename = storageOperate.getFileName(type, tenantCode, fullName);
+//                    if (storageOperate.exists(tenantCode, filename)) {
+//                        putMsg(result, Status.RESOURCE_FILE_EXIST, filename);
+//                    }
+//
+//                } catch (Exception e) {
+//                    logger.error("verify resource failed  and the reason is {}", e.getMessage());
+//                    putMsg(result, Status.STORE_OPERATE_CREATE_ERROR);
+//                }
+//            } else {
+//                putMsg(result, Status.CURRENT_LOGIN_USER_TENANT_NOT_EXIST);
+//            }
         }
 
         return result;
@@ -1110,10 +1110,10 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
 
         String tenantCode = tenantMapper.queryById(loginUser.getTenantId()).getTenantCode();
 
-        result = uploadContentToStorage(loginUser, fullName, tenantCode, content);
-        if (!result.getCode().equals(Status.SUCCESS.getCode())) {
-            throw new ServiceException(result.getMsg());
-        }
+//        result = uploadContentToStorage(loginUser, fullName, tenantCode, content);
+//        if (!result.getCode().equals(Status.SUCCESS.getCode())) {
+//            throw new ServiceException(result.getMsg());
+//        }
         return result;
     }
 
@@ -1126,11 +1126,11 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
         Result<Object> result = new Result<>();
         putMsg(result, Status.SUCCESS);
         // if resource upload startup
-        if (!PropertyUtils.getResUploadStartupState()) {
-            logger.error("resource upload startup state: {}", PropertyUtils.getResUploadStartupState());
-            putMsg(result, Status.STORAGE_NOT_STARTUP);
-            return result;
-        }
+//        if (!PropertyUtils.getResUploadStartupState()) {
+//            logger.error("resource upload startup state: {}", PropertyUtils.getResUploadStartupState());
+//            putMsg(result, Status.STORAGE_NOT_STARTUP);
+//            return result;
+//        }
         return result;
     }
 
@@ -1226,37 +1226,37 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
         Result<Object> result = new Result<>();
         String localFilename = "";
         String storageFileName = "";
-        try {
-            localFilename = FileUtils.getUploadFilename(tenantCode, UUID.randomUUID().toString());
-
-            if (!FileUtils.writeContent2File(content, localFilename)) {
-                // write file fail
-                logger.error("file {} fail, content is {}", localFilename, RegexUtils.escapeNRT(content));
-                putMsg(result, Status.RESOURCE_NOT_EXIST);
-                return result;
-            }
-
-            // get resource file  path
-            storageFileName = storageOperate.getResourceFileName(tenantCode, resourceName);
-            String resourcePath = storageOperate.getResDir(tenantCode);
-            logger.info("resource  path is {}, resource dir is {}", storageFileName, resourcePath);
-
-
-            if (!storageOperate.exists(tenantCode, resourcePath)) {
-                // create if tenant dir not exists
-                storageOperate.createTenantDirIfNotExists(tenantCode);
-            }
-            if (storageOperate.exists(tenantCode, storageFileName)) {
-                storageOperate.delete(tenantCode, storageFileName, false);
-            }
-
-            storageOperate.upload(tenantCode, localFilename, storageFileName, true, true);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            result.setCode(Status.HDFS_OPERATION_ERROR.getCode());
-            result.setMsg(String.format("copy %s to hdfs %s fail", localFilename, storageFileName));
-            return result;
-        }
+//        try {
+//            localFilename = FileUtils.getUploadFilename(tenantCode, UUID.randomUUID().toString());
+//
+//            if (!FileUtils.writeContent2File(content, localFilename)) {
+//                // write file fail
+//                logger.error("file {} fail, content is {}", localFilename, RegexUtils.escapeNRT(content));
+//                putMsg(result, Status.RESOURCE_NOT_EXIST);
+//                return result;
+//            }
+//
+//            // get resource file  path
+//            storageFileName = storageOperate.getResourceFileName(tenantCode, resourceName);
+//            String resourcePath = storageOperate.getResDir(tenantCode);
+//            logger.info("resource  path is {}, resource dir is {}", storageFileName, resourcePath);
+//
+//
+//            if (!storageOperate.exists(tenantCode, resourcePath)) {
+//                // create if tenant dir not exists
+//                storageOperate.createTenantDirIfNotExists(tenantCode);
+//            }
+//            if (storageOperate.exists(tenantCode, storageFileName)) {
+//                storageOperate.delete(tenantCode, storageFileName, false);
+//            }
+//
+//            storageOperate.upload(tenantCode, localFilename, storageFileName, true, true);
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//            result.setCode(Status.HDFS_OPERATION_ERROR.getCode());
+//            result.setMsg(String.format("copy %s to hdfs %s fail", localFilename, storageFileName));
+//            return result;
+//        }
         putMsg(result, Status.SUCCESS);
         return result;
     }

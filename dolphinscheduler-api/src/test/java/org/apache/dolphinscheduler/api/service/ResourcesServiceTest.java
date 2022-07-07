@@ -606,6 +606,37 @@ public class ResourcesServiceTest {
     }
 
     @Test
+    public void testOnlineCreateResourceWithDir() {
+
+        User user = getUser();
+        user.setId(1);
+
+        PowerMockito.when(resourcePermissionCheckService.operationPermissionCheck(AuthorizationType.RESOURCE_FILE_ID, user.getId(), ApiFuncIdentificationConstant.FILE_ONLINE_CREATE, serviceLogger)).thenReturn(true);
+        PowerMockito.when(resourcePermissionCheckService.resourcePermissionCheck(AuthorizationType.RESOURCE_FILE_ID, null, user.getId(), serviceLogger)).thenReturn(true);
+        PowerMockito.when(PropertyUtils.getResUploadStartupState()).thenReturn(false);
+        PowerMockito.when(storageOperate.getResourceFileName(Mockito.anyString(), eq("hdfsdDir"))).thenReturn("hdfsDir");
+        PowerMockito.when(storageOperate.getUdfDir("udfDir")).thenReturn("udfDir");
+
+
+
+        String fileName = "test";
+        String fileSuffix = "py";
+        String desc = "desc";
+        String content = "content";
+        String currentDirectory = "/dev";
+
+        Resource dir1 = new Resource();
+        dir1.setId(1);
+
+
+        Mockito.when(resourcesMapper.queryResource(currentDirectory, ResourceType.FILE.ordinal()))
+                .thenReturn(Collections.singletonList(dir1));
+
+
+//        Result<Object> result = resourcesService.onlineCreateResourceWithDir(user, ResourceType.FILE, fileName, fileSuffix, desc, content, currentDirectory);
+    }
+
+    @Test
     public void testUpdateResourceContent() {
         PowerMockito.when(PropertyUtils.getResUploadStartupState()).thenReturn(false);
 
