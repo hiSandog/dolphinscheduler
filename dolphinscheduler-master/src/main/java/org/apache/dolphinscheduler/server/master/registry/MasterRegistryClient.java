@@ -95,8 +95,10 @@ public class MasterRegistryClient {
     public void start() {
         try {
             // master registry
+            // 注册
             registry();
             registryClient.addConnectionStateListener(new MasterConnectionStateListener(getCurrentNodePath(), registryClient));
+            // 订阅
             registryClient.subscribe(REGISTRY_DOLPHINSCHEDULER_NODE, new MasterRegistryDataListener());
         } catch (Exception e) {
             throw new RegistryException("Master registry client start up error", e);
@@ -196,7 +198,9 @@ public class MasterRegistryClient {
                 registryClient);
 
         // remove before persist
+        // 注册之前先移除
         registryClient.remove(localNodePath);
+        // 注册信息，包括现在的机器状态
         registryClient.persistEphemeral(localNodePath, heartBeatTask.getHeartBeatInfo());
 
         while (!registryClient.checkNodeExists(NetUtils.getHost(), NodeType.MASTER)) {
@@ -210,6 +214,7 @@ public class MasterRegistryClient {
         // delete dead server
         registryClient.handleDeadServer(Collections.singleton(localNodePath), NodeType.MASTER, Constants.DELETE_OP);
 
+        // 启动心跳线程
         this.heartBeatExecutor.scheduleAtFixedRate(heartBeatTask, 0L, masterHeartbeatInterval.getSeconds(), TimeUnit.SECONDS);
         logger.info("Master node : {} registered to registry center successfully with heartBeatInterval : {}s", masterAddress, masterHeartbeatInterval);
 

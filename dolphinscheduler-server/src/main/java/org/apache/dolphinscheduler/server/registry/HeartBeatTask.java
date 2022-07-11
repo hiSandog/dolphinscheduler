@@ -76,6 +76,7 @@ public class HeartBeatTask implements Runnable {
         try {
             // check dead or not in zookeeper
             for (String heartBeatPath : heartBeatPaths) {
+                // 检查是否有死亡节点
                 if (registryClient.checkIsDeadServer(heartBeatPath, serverType)) {
                     registryClient.getStoppable().stop("i was judged to death, release resources and stop myself");
                     return;
@@ -85,6 +86,7 @@ public class HeartBeatTask implements Runnable {
             // update waiting task count
             heartBeat.setWorkerWaitingTaskCount(workerWaitingTaskCount);
 
+            // 将最新的机器信息，包括机器CPU，内存，PID等等信息注册到zk上去的
             for (String heartBeatPath : heartBeatPaths) {
                 registryClient.persistEphemeral(heartBeatPath, heartBeat.encodeHeartBeat());
             }

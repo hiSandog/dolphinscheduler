@@ -679,6 +679,7 @@ public class WorkflowExecuteRunnable implements Callable<WorkflowSubmitStatue> {
 
         try {
             LoggerUtils.setWorkflowInstanceIdMDC(processInstance.getId());
+            // 找到 processInstance 对应的 processDefinition 以及 ProcessTaskRelation ，构建出整个任务流的完整路径
             buildFlowDag();
             initTaskQueue();
             submitPostNode(null);
@@ -909,6 +910,7 @@ public class WorkflowExecuteRunnable implements Callable<WorkflowSubmitStatue> {
                 notifyProcessHostUpdate(taskInstance);
             }
 
+            // 调用 ProcessServiceImpl.submitTask 将任务实例保存到数据库中
             boolean submit = taskProcessor.action(TaskAction.SUBMIT);
             if (!submit) {
                 logger.error("process id:{} name:{} submit standby task id:{} name:{} failed!", processInstance.getId(), processInstance.getName(), taskInstance.getId(), taskInstance.getName());
@@ -1234,9 +1236,11 @@ public class WorkflowExecuteRunnable implements Callable<WorkflowSubmitStatue> {
     }
 
     private void submitPostNode(String parentNodeCode) throws StateEventHandleException {
+        // DagHelper.parsePostNodes 将 dag 解析成需要执行的 submitTaskNodeList
         Set<String> submitTaskNodeList =
             DagHelper.parsePostNodes(parentNodeCode, skipTaskNodeMap, dag, getCompleteTaskInstanceMap());
         List<TaskInstance> taskInstances = new ArrayList<>();
+        // 生成TaskInstance
         for (String taskNode : submitTaskNodeList) {
             TaskNode taskNodeObject = dag.getNode(taskNode);
             Optional<TaskInstance> existTaskInstanceOptional = getTaskInstance(taskNodeObject.getCode());
@@ -1265,6 +1269,7 @@ public class WorkflowExecuteRunnable implements Callable<WorkflowSubmitStatue> {
         }
 
         // if previous node success , post node submit
+        // 压到 readyToSubmitTaskQueue 队列中
         for (TaskInstance task : taskInstances) {
 
             if (readyToSubmitTaskQueue.contains(task)) {
@@ -1283,7 +1288,9 @@ public class WorkflowExecuteRunnable implements Callable<WorkflowSubmitStatue> {
 
             addTaskToStandByList(task);
         }
+        // 提交任务
         submitStandByTask();
+        // 更新工作流状态
         updateProcessInstanceState();
     }
 

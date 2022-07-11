@@ -90,6 +90,7 @@ public class MasterServer implements IStoppable {
         this.taskPluginManager.installPlugin();
 
         // self tolerant
+        // 通信有关注册
         this.masterRegistryClient.init();
         this.masterRegistryClient.start();
         this.masterRegistryClient.setRegistryStoppable(this);

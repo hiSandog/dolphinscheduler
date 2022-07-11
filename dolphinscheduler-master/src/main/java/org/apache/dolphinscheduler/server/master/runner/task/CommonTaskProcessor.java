@@ -132,6 +132,7 @@ public class CommonTaskProcessor extends BaseTaskProcessor {
 
             taskPriority.setTaskExecutionContext(taskExecutionContext);
 
+            // 会在 TaskPriorityQueueConsumer 消费掉
             taskUpdateQueue.put(taskPriority);
             logger.info("Master submit task to priority queue success, taskInstanceId : {}", taskInstance.getId());
             return true;

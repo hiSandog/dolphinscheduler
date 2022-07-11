@@ -72,6 +72,7 @@ public class TaskPriorityQueueConsumer extends BaseDaemonThread {
     /**
      * taskUpdateQueue
      */
+    // CommonTaskProcessor 的 taskUpdateQueue
     @Autowired
     private TaskPriorityQueue<TaskPriority> taskPriorityQueue;
 
@@ -214,6 +215,7 @@ public class TaskPriorityQueueConsumer extends BaseDaemonThread {
                 }
             }
 
+            //
             result = dispatcher.dispatch(executionContext);
 
             if (result) {

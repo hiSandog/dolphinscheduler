@@ -123,6 +123,7 @@ public class NettyExecutorManager extends AbstractExecutorManager<Boolean> {
             } catch (ExecuteException ex) {
                 logger.error(String.format("execute command : %s error", command), ex);
                 try {
+                    // 如果失败，将会在所有节点重试，如果都失败，就报错
                     failNodeSet.add(host.getAddress());
                     Set<String> tmpAllIps = new HashSet<>(allNodes);
                     Collection<String> remained = CollectionUtils.subtract(tmpAllIps, failNodeSet);
@@ -160,6 +161,7 @@ public class NettyExecutorManager extends AbstractExecutorManager<Boolean> {
         boolean success = false;
         do {
             try {
+                // 真正发送任务给 worker 的执行
                 nettyRemotingClient.send(host, command);
                 success = true;
             } catch (Exception ex) {
