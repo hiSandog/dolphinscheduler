@@ -188,6 +188,7 @@ public class TaskPriorityQueueConsumer extends BaseDaemonThread {
         TaskMetrics.incTaskDispatch();
         boolean result = false;
         try {
+            System.out.println("TaskPriorityQueueConsumer.dispatchTask");
             WorkflowExecuteRunnable workflowExecuteRunnable =
                 processInstanceExecCacheManager.getByProcessInstanceId(taskPriority.getProcessInstanceId());
             if (workflowExecuteRunnable == null) {

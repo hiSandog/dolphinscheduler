@@ -88,6 +88,7 @@ public class ExecutorDispatcher implements InitializingBean {
                 context.getCommand(), context.getWorkerGroup());
             return false;
         }
+        System.out.println("ExecutorDispatcher.dispatch, host:" + host.getAddress());
         context.setHost(host);
         executorManager.beforeExecute(context);
         try {

@@ -131,6 +131,7 @@ public class RegistryClient {
                 if (nodeType == NodeType.WORKER && hostOnly) {
                     host = server.split(SINGLE_SLASH)[1];
                 }
+                System.out.println("host: " + host + " value: " + get(path + SINGLE_SLASH + server));
                 serverMap.putIfAbsent(host, get(path + SINGLE_SLASH + server));
             }
         } catch (Exception e) {

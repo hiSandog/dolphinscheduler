@@ -83,6 +83,7 @@ public class MasterServer implements IStoppable {
      */
     @PostConstruct
     public void run() throws SchedulerException {
+        System.out.println("MasterServer.run");
         // init rpc server
         this.masterRPCServer.start();
 

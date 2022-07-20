@@ -120,6 +120,7 @@ public class LowerWeightHostManager extends CommonHostManager {
                     String heartbeat = workerNodeInfoMap.getOrDefault(node, null);
                     Optional<HostWeight> hostWeightOpt = getHostWeight(node, workerGroup, heartbeat);
                     hostWeightOpt.ifPresent(hostWeights::add);
+                    hostWeightOpt.ifPresent(hostWeight -> System.out.println("node:" + node + " weight: " + hostWeight));
                 }
                 if (!hostWeights.isEmpty()) {
                     workerHostWeights.put(workerGroup, hostWeights);
@@ -136,6 +137,7 @@ public class LowerWeightHostManager extends CommonHostManager {
             logger.warn("worker {} in work group {} have not received the heartbeat", addr, workerGroup);
             return Optional.empty();
         }
+        // heartBeatInfo 0.24,0.62,9.45,6.03,16.0,0.3,1658220849340,1658220941238,0,4085,100,10,0,22.7
         HeartBeat heartBeat = HeartBeat.decodeHeartBeat(heartBeatInfo);
         if (heartBeat == null) {
             return Optional.empty();

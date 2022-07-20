@@ -80,6 +80,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        System.out.println("NettyServerHandler.channelRead msg: " + msg);
         processReceived(ctx.channel(), (Command) msg);
     }
 

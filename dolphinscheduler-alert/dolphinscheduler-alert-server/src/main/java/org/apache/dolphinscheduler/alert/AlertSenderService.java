@@ -17,6 +17,8 @@
 
 package org.apache.dolphinscheduler.alert;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.dolphinscheduler.alert.api.AlertChannel;
 import org.apache.dolphinscheduler.alert.api.AlertConstants;
 import org.apache.dolphinscheduler.alert.api.AlertData;
@@ -92,6 +94,7 @@ public final class AlertSenderService extends Thread {
                 alertDao.updateAlert(AlertStatus.EXECUTION_FAILURE, "no bind plugin instance", alertId);
                 continue;
             }
+
             AlertData alertData = new AlertData();
             alertData.setId(alertId)
                     .setContent(alert.getContent())

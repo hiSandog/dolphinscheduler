@@ -96,6 +96,8 @@ public class ServerNodeManager implements InitializingBean {
 
     /**
      * worker node info
+     * host 192.168.50.144:1234
+     * value 0.24,0.62,9.45,6.03,16.0,0.3,1658220849340,1658220941238,0,4085,100,10,0,22.7
      */
     private final Map<String, String> workerNodeInfo = new HashMap<>();
 
@@ -154,6 +156,7 @@ public class ServerNodeManager implements InitializingBean {
      */
     @Override
     public void afterPropertiesSet() throws Exception {
+        System.out.println("ServerNodeManager.afterPropertiesSet");
         /**
          * load nodes from zookeeper
          */
@@ -199,7 +202,9 @@ public class ServerNodeManager implements InitializingBean {
         @Override
         public void run() {
             try {
+                System.out.println("WorkerNodeInfoAndGroupDbSyncTask.run");
                 // sync worker node info
+                // 节点信息同步到本地
                 Map<String, String> newWorkerNodeInfo = registryClient.getServerMaps(NodeType.WORKER, true);
                 syncAllWorkerNodeInfo(newWorkerNodeInfo);
 
