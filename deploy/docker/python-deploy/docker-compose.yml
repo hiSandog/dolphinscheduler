@@ -18,31 +18,16 @@ version: "3.1"
 
 services:
 
-  dolphinscheduler-api:
-    image: ${HUB}/dolphinscheduler-api:${TAG}
-    ports:
-      - "25333:25333"
-    env_file: .env
-    healthcheck:
-      test: [ "CMD", "curl", "http://localhost:12345/dolphinscheduler/actuator/health" ]
-      interval: 30s
-      timeout: 5s
-      retries: 3
+  dolphinscheduler-deploy:
+    image: docker-inter.zaihui.com.cn/inf/dolphinscheduler-deploy:3.0.1.1
     volumes:
-      - ./common.properties:/opt/dolphinscheduler/conf/common.properties
-      - dolphinscheduler-logs:/opt/dolphinscheduler/logs
-      - dolphinscheduler-shared-local:/opt/soft
-      - dolphinscheduler-resource-local:/dolphinscheduler
+      - /opt/py-code:/code
     environment:
       - TZ=Asia/Shanghai
     networks:
       - dolphinscheduler
+    entrypoint: ["tail", "-f", "/dev/null"]
 
 networks:
   dolphinscheduler:
     driver: bridge
-
-volumes:
-  dolphinscheduler-logs:
-  dolphinscheduler-shared-local:
-  dolphinscheduler-resource-local:

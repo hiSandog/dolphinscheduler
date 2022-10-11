@@ -18,6 +18,20 @@ version: "3.1"
 
 services:
 
+  dolphinscheduler-zookeeper:
+    image: bitnami/zookeeper:3.6.2
+    environment:
+      TZ: Asia/Shanghai
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+      ZOO_4LW_COMMANDS_WHITELIST: srvr,ruok,wchs,cons
+    volumes:
+      - dolphinscheduler-zookeeper:/bitnami/zookeeper
+    networks:
+      - dolphinscheduler
+    deploy:
+      mode: replicated
+      replicas: 1
+
   dolphinscheduler-api:
     image: apache/dolphinscheduler-api
     ports:
@@ -38,8 +52,6 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-
-
 
   dolphinscheduler-master:
     image: apache/dolphinscheduler-master
@@ -82,6 +94,7 @@ networks:
     driver: overlay
 
 volumes:
+  dolphinscheduler-zookeeper:
   dolphinscheduler-worker-data:
   dolphinscheduler-logs:
   dolphinscheduler-shared-local:

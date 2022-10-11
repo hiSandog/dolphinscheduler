@@ -18,6 +18,21 @@ version: "3.1"
 
 services:
 
+  dolphinscheduler-zookeeper:
+    image: bitnami/zookeeper:3.6.2
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+      ZOO_4LW_COMMANDS_WHITELIST: srvr,ruok,wchs,cons
+    volumes:
+      - dolphinscheduler-zookeeper:/bitnami/zookeeper
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/2181"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+    networks:
+      - dolphinscheduler
+
   dolphinscheduler-api:
     image: ${HUB}/dolphinscheduler-api:${TAG}
     ports:
@@ -64,6 +79,8 @@ services:
       retries: 3
     volumes:
       - ./common.properties:/opt/dolphinscheduler/conf/common.properties
+      - ./requirements.txt:/deploy_script/requirements.txt
+      - ./worker_deploy.sh:/deploy_script/worker_deploy.sh
       - dolphinscheduler-worker-data:/tmp/dolphinscheduler
       - dolphinscheduler-logs:/opt/dolphinscheduler/logs
       - dolphinscheduler-shared-local:/opt/soft
@@ -76,6 +93,7 @@ networks:
     driver: bridge
 
 volumes:
+  dolphinscheduler-zookeeper:
   dolphinscheduler-worker-data:
   dolphinscheduler-logs:
   dolphinscheduler-shared-local:

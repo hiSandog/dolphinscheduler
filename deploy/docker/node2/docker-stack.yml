@@ -18,27 +18,6 @@ version: "3.1"
 
 services:
 
-  dolphinscheduler-api:
-    image: apache/dolphinscheduler-api
-    ports:
-      - 12345:12345
-      - 25333:25333
-    env_file: .env
-    healthcheck:
-      test: [ "CMD", "curl", "http://localhost:12345/actuator/health" ]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-    volumes:
-      - dolphinscheduler-logs:/opt/dolphinscheduler/logs
-      - dolphinscheduler-shared-local:/opt/soft
-      - dolphinscheduler-resource-local:/dolphinscheduler
-    networks:
-      - dolphinscheduler
-    deploy:
-      mode: replicated
-      replicas: 1
-
   dolphinscheduler-alert:
     image: apache/dolphinscheduler-alert-server
     env_file: .env
@@ -96,7 +75,6 @@ networks:
     driver: overlay
 
 volumes:
-  dolphinscheduler-zookeeper:
   dolphinscheduler-worker-data:
   dolphinscheduler-logs:
   dolphinscheduler-shared-local:

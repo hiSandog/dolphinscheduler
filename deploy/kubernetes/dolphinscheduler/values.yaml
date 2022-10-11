@@ -22,14 +22,14 @@
 timezone: "Asia/Shanghai"
 
 image:
-  registry: "dolphinscheduler.docker.scarf.sh/apache"
-  tag: "3.0.1"
+  registry: "docker-outer.zaihui.com.cn/inf"
+  tag: "3.0.1.2"
   pullPolicy: "IfNotPresent"
   pullSecret: ""
 
 ## If not exists external database, by default, Dolphinscheduler's database will use it.
 postgresql:
-  enabled: true
+  enabled: false
   postgresqlUsername: "root"
   postgresqlPassword: "root"
   postgresqlDatabase: "dolphinscheduler"
@@ -41,17 +41,17 @@ postgresql:
 ## If exists external database, and set postgresql.enable value to false.
 ## external database will be used, otherwise Dolphinscheduler's database will be used.
 externalDatabase:
-  type: "postgresql"
-  host: "localhost"
-  port: "5432"
-  username: "root"
-  password: "root"
+  type: "mysql"
+  host: "172.30.17.168"
+  port: "3307"
+  username: "zaihui"
+  password: "Wocao404"
   database: "dolphinscheduler"
   params: "characterEncoding=utf8"
 
 ## If not exists external registry, the zookeeper registry will be used by default.
 zookeeper:
-  enabled: true
+  enabled: false
   service:
     port: 2181 
   fourlwCommandsWhitelist: "srvr,ruok,wchs,cons"
@@ -64,7 +64,7 @@ zookeeper:
 externalRegistry:
   registryPluginDir: "lib/plugin/registry"
   registryPluginName: "zookeeper"
-  registryServers: "127.0.0.1:2181"
+  registryServers: "172.30.78.239:2181"
 
 conf:
   common:
@@ -72,7 +72,7 @@ conf:
     data.basedir.path: /tmp/dolphinscheduler
 
     # resource storage type: HDFS, S3, NONE
-    resource.storage.type: HDFS
+    resource.storage.type: S3
 
     # resource store on HDFS/S3 path, resource file will store to this hadoop hdfs path, self configuration, please make sure the directory exists on hdfs and have read write permissions. "/dolphinscheduler" is recommended
     resource.upload.path: /dolphinscheduler
@@ -97,10 +97,12 @@ conf:
     hdfs.root.user: hdfs
     # if resource.storage.type: S3, the value like: s3a://dolphinscheduler; if resource.storage.type: HDFS and namenode HA is enabled, you need to copy core-site.xml and hdfs-site.xml to conf dir
     fs.defaultFS: file:///
-    aws.access.key.id: minioadmin
-    aws.secret.access.key: minioadmin
-    aws.region: us-east-1
-    aws.endpoint: http://localhost:9000
+    resource.aws.access.key.id: AKIASNQNUEIMCWQHOLVT
+    resource.aws.secret.access.key: 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
+    resource.aws.region: cn-northwest-1
+    resource.aws.endpoint: s3.cn-northwest-1.amazonaws.com.cn
+    resource.aws.s3.bucket.name: qilin-prod
+    resource.storage.upload.base.path: /dolphin-alpha
     # resourcemanager port, the default value is 8088 if not specified
     resource.manager.httpaddress.port: 8088
     # if resourcemanager HA is enabled, please set the HA IPs; if resourcemanager is single, keep this value empty
@@ -173,7 +175,7 @@ common:
     HADOOP_CONF_DIR: "/opt/soft/hadoop/etc/hadoop"
     SPARK_HOME1: "/opt/soft/spark1"
     SPARK_HOME2: "/opt/soft/spark2"
-    PYTHON_HOME: "/usr/bin/python"
+    PYTHON_HOME: "/usr/bin/python3"
     JAVA_HOME: "/usr/local/openjdk-8"
     HIVE_HOME: "/opt/soft/hive"
     FLINK_HOME: "/opt/soft/flink"
@@ -200,7 +202,7 @@ master:
   ## PodManagementPolicy controls how pods are created during initial scale up, when replacing pods on nodes, or when scaling down.
   podManagementPolicy: "Parallel"
   ## Replicas is the desired number of replicas of the given Template.
-  replicas: "3"
+  replicas: "1"
   ## You can use annotations to attach arbitrary non-identifying metadata to objects.
   ## Clients such as tools and libraries can retrieve this metadata.
   annotations: {}
@@ -272,7 +274,7 @@ worker:
   ## PodManagementPolicy controls how pods are created during initial scale up, when replacing pods on nodes, or when scaling down.
   podManagementPolicy: "Parallel"
   ## Replicas is the desired number of replicas of the given Template.
-  replicas: "3"
+  replicas: "2"
   ## You can use annotations to attach arbitrary non-identifying metadata to objects.
   ## Clients such as tools and libraries can retrieve this metadata.
   annotations: {}
@@ -465,7 +467,7 @@ api:
     storage: "20Gi"
   service:
     ## type determines how the Service is exposed. Defaults to ClusterIP. Valid options are ExternalName, ClusterIP, NodePort, and LoadBalancer
-    type: "ClusterIP"
+    type: "NodePort"
     ## clusterIP is the IP address of the service and is usually assigned randomly by the master
     clusterIP: ""
     ## nodePort is the port on each node on which this service is exposed when type=NodePort
