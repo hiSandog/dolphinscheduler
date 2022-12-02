@@ -63,7 +63,10 @@ services:
       timeout: 5s
       retries: 3
     volumes:
+      - ./requirements.txt:/deploy_script/requirements.txt
+      - ./worker_deploy.sh:/deploy_script/worker_deploy.sh
       - ./common.properties:/opt/dolphinscheduler/conf/common.properties
+      - /opt/soft/hadoop:/opt/soft/hadoop
       - dolphinscheduler-worker-data:/tmp/dolphinscheduler
       - dolphinscheduler-logs:/opt/dolphinscheduler/logs
       - dolphinscheduler-shared-local:/opt/soft
